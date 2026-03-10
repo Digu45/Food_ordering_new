@@ -161,104 +161,64 @@ $upiLink = 'upi://pay?pa=' . urlencode(UPI_ID) . '&pn=' . urlencode(UPI_NAME) . 
     </div>
 
     <!-- UPI panel -->
-    <div id="upiPanel" style="display:none;background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-      <div style="font-weight:700;font-size:15px;color:#111;margin-bottom:14px;text-align:center;">
-        <i class="fas fa-qrcode" style="color:#e65c00;margin-right:7px;"></i>Pay ₹<?= $total ?> via UPI
+    <div id="upiPanel" style="display:none;background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+
+      <!-- Header -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-weight:800;font-size:16px;color:#111;">📲 Pay via UPI</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:3px;">Complete payment then tap I Have Paid</div>
       </div>
 
-      <!-- Tab switcher: Mobile / Desktop -->
-      <div style="display:flex;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:16px;">
-        <button id="tab-mobile" onclick="switchTab('mobile')"
-          style="flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#e65c00,#f9a84d);color:#fff;">
-          📱 On Mobile
-        </button>
-        <button id="tab-desktop" onclick="switchTab('desktop')"
-          style="flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:#6b7280;">
-          💻 On Desktop
-        </button>
+      <!-- Amount box -->
+      <div style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:2px solid #fed7aa;border-radius:14px;padding:14px;text-align:center;margin-bottom:16px;">
+        <div style="font-size:11px;color:#9a3412;font-weight:600;margin-bottom:2px;">Total Amount</div>
+        <div style="font-size:36px;font-weight:900;color:#e65c00;">₹<?= $total ?></div>
       </div>
 
-      <!-- MOBILE TAB -->
-      <div id="panel-mobile">
-        <p style="font-size:12px;color:#6b7280;text-align:center;margin-bottom:12px;">
-          Tap your UPI app below — amount & UPI ID are pre-filled
-        </p>
-
-        <!-- UPI app buttons -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-          <a href="<?= $upiLink ?>&amp;mc=5411" id="gpayBtn"
-            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;text-decoration:none;font-weight:700;font-size:13px;color:#111;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo_%282020%29.svg/120px-Google_Pay_Logo_%282020%29.svg.png" height="22" style="object-fit:contain;"/> GPay
-          </a>
-          <a href="phonepe://pay?pa=<?= urlencode(UPI_ID) ?>&pn=<?= urlencode(UPI_NAME) ?>&am=<?= $total ?>&cu=INR"
-            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;text-decoration:none;font-weight:700;font-size:13px;color:#111;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/PhonePe_Logo.png/240px-PhonePe_Logo.png" height="22" style="object-fit:contain;"/> PhonePe
-          </a>
-          <a href="paytmmp://pay?pa=<?= urlencode(UPI_ID) ?>&pn=<?= urlencode(UPI_NAME) ?>&am=<?= $total ?>&cu=INR"
-            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;text-decoration:none;font-weight:700;font-size:13px;color:#111;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/200px-Paytm_Logo_%28standalone%29.svg.png" height="22" style="object-fit:contain;"/> Paytm
-          </a>
-          <a href="<?= $upiLink ?>"
-            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;text-decoration:none;font-weight:700;font-size:13px;color:#111;">
-            <span style="font-size:20px;">📲</span> Other UPI
-          </a>
+      <!-- QR code — dynamically generated with amount pre-filled -->
+      <div style="border:2px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="background:#eff6ff;color:#3b82f6;padding:3px 8px;border-radius:6px;font-size:11px;">OPTION 1</span>
+          Scan QR — ₹<?= $total ?> auto-filled in app
         </div>
+        <div style="text-align:center;">
+          <?php
+            $qrData = 'upi://pay?pa=' . urlencode(UPI_ID) . '&pn=' . urlencode(UPI_NAME) . '&am=' . $total . '&cu=INR&tn=' . urlencode('Order at ' . RESTAURANT_NAME);
+            $qrUrl  = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' . urlencode($qrData);
+          ?>
+          <img src="<?= $qrUrl ?>" width="200" height="200" style="border-radius:10px;border:1px solid #e5e7eb;" alt="UPI QR"/>
+          <div style="font-size:11px;color:#9ca3af;margin-top:6px;">Scan with GPay · PhonePe · Paytm · Any UPI app</div>
+          <div style="font-size:11px;font-weight:700;color:#16a34a;margin-top:3px;">✅ Amount ₹<?= $total ?> is pre-filled automatically</div>
+        </div>
+      </div>
 
-        <!-- OR: Manual UPI ID copy -->
-        <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-          <div style="font-size:11px;color:#9a3412;font-weight:600;margin-bottom:6px;text-align:center;">— OR pay manually —</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-            <div>
-              <div style="font-size:11px;color:#9a3412;">UPI ID</div>
-              <div style="font-weight:700;color:#111;font-size:15px;" id="upiIdText"><?= UPI_ID ?></div>
-            </div>
-            <button onclick="copyUpiId()"
-              style="padding:8px 14px;background:#e65c00;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;" id="copyBtn">
-              <i class="fas fa-copy" style="margin-right:4px;"></i>Copy ID
-            </button>
+      <!-- UPI ID copy -->
+      <div style="border:2px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="background:#f0fdf4;color:#16a34a;padding:3px 8px;border-radius:6px;font-size:11px;">OPTION 2</span>
+          Copy UPI ID &amp; pay manually
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div>
+            <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Open GPay / PhonePe → Send Money → Enter UPI ID</div>
+            <div style="font-weight:800;color:#111;font-size:16px;letter-spacing:.3px;" id="upiIdText"><?= UPI_ID ?></div>
           </div>
-          <div style="text-align:center;margin-top:6px;font-weight:900;color:#e65c00;font-size:22px;">₹<?= $total ?></div>
+          <button onclick="copyUpiId()" id="copyBtn"
+            style="flex-shrink:0;padding:10px 16px;background:#e65c00;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">
+            <i class="fas fa-copy" style="margin-right:4px;"></i>Copy
+          </button>
         </div>
       </div>
 
-      <!-- DESKTOP TAB -->
-      <div id="panel-desktop" style="display:none;">
-        <p style="font-size:12px;color:#6b7280;text-align:center;margin-bottom:12px;">
-          Open any UPI app on your phone and scan this QR code
-        </p>
-        <div style="text-align:center;margin-bottom:14px;">
-          <div style="display:inline-block;padding:12px;border:2px solid #e5e7eb;border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <img src="upi_qr.jpg" width="200" height="200" style="display:block;border-radius:8px;" alt="UPI QR"/>
-          </div>
-          <p style="font-size:11px;color:#9ca3af;margin-top:6px;">GPay · PhonePe · Paytm · Any UPI app</p>
-        </div>
-        <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:10px 14px;margin-bottom:14px;text-align:center;">
-          <div style="font-size:11px;color:#9a3412;font-weight:600;">Pay to UPI ID: <strong><?= UPI_ID ?></strong></div>
-          <div style="font-weight:900;color:#e65c00;font-size:24px;margin-top:4px;">₹<?= $total ?></div>
-        </div>
-      </div>
+      <!-- I Have Paid button -->
+      <button onclick="confirmUpiPaid()"
+        style="width:100%;padding:16px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:800;font-size:16px;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.35);margin-bottom:8px;">
+        <i class="fas fa-check-circle" style="margin-right:8px;"></i>✅ I Have Paid — Place My Order
+      </button>
+      <p style="font-size:11px;color:#9ca3af;text-align:center;">
+        Only tap after completing payment · Owner verifies via GPay notification
+      </p>
 
-      <!-- UTR input + confirm (shown in both tabs) -->
-      <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:14px;">
-        <p style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px;">
-          <i class="fas fa-shield-alt" style="margin-right:5px;"></i>Enter Transaction ID after paying
-        </p>
-        <p style="font-size:11px;color:#6b7280;margin-bottom:10px;">
-          GPay/PhonePe → History → Last transaction → Copy UTR / Transaction ID
-        </p>
-        <input type="text" id="utrInput"
-          placeholder="e.g. 407612345678 or T2503110012"
-          style="width:100%;padding:12px 14px;border:2px solid #d1fae5;border-radius:10px;font-size:14px;font-family:monospace;background:#fff;outline:none;margin-bottom:10px;"
-          oninput="this.style.borderColor=this.value.length>=8?'#22c55e':'#d1fae5'"
-        />
-        <button onclick="confirmUpiPaid()"
-          style="width:100%;padding:14px;background:linear-gradient(135deg,#e65c00,#f9a84d);color:#fff;font-weight:700;font-size:15px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 14px rgba(230,92,0,.35);">
-          <i class="fas fa-check-circle" style="margin-right:7px;"></i>✅ Confirm Payment & Place Order
-        </button>
-        <p style="font-size:10px;color:#9ca3af;margin-top:8px;text-align:center;">
-          Transaction ID is required to verify your payment with the restaurant
-        </p>
-      </div>
     </div>
 
     <!-- Cash panel -->
@@ -317,48 +277,41 @@ $upiLink = 'upi://pay?pa=' . urlencode(UPI_ID) . '&pn=' . urlencode(UPI_NAME) . 
       btn.innerHTML = labels[m];
     }
 
-    // Auto-detect mobile or desktop and switch tab
-    window.addEventListener('load', () => {
-      const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-      switchTab(isMobile ? 'mobile' : 'desktop');
-    });
-
-    function switchTab(tab) {
-      document.getElementById('panel-mobile').style.display  = tab === 'mobile'  ? 'block' : 'none';
-      document.getElementById('panel-desktop').style.display = tab === 'desktop' ? 'block' : 'none';
-      const activeStyle  = 'background:linear-gradient(135deg,#e65c00,#f9a84d);color:#fff;';
-      const inactiveStyle = 'background:transparent;color:#6b7280;';
-      document.getElementById('tab-mobile').style.cssText  += tab === 'mobile'  ? activeStyle : inactiveStyle;
-      document.getElementById('tab-desktop').style.cssText += tab === 'desktop' ? activeStyle : inactiveStyle;
-    }
-
     function copyUpiId() {
-      const id = document.getElementById('upiIdText').textContent;
+      const id = document.getElementById('upiIdText').textContent.trim();
       navigator.clipboard.writeText(id).then(() => {
         const btn = document.getElementById('copyBtn');
         btn.innerHTML = '<i class="fas fa-check" style="margin-right:4px;"></i>Copied!';
         btn.style.background = '#16a34a';
         setTimeout(() => {
-          btn.innerHTML = '<i class="fas fa-copy" style="margin-right:4px;"></i>Copy ID';
+          btn.innerHTML = '<i class="fas fa-copy" style="margin-right:4px;"></i>Copy';
           btn.style.background = '#e65c00';
-        }, 2000);
+        }, 2500);
+      }).catch(() => {
+        // Fallback for older browsers
+        const el = document.createElement('textarea');
+        el.value = id;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<i class="fas fa-check" style="margin-right:4px;"></i>Copied!';
+        btn.style.background = '#16a34a';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fas fa-copy" style="margin-right:4px;"></i>Copy';
+          btn.style.background = '#e65c00';
+        }, 2500);
       });
     }
 
-    // Called when customer taps Confirm Payment
+    // Called when customer taps I Have Paid
     function confirmUpiPaid() {
-      const utr = document.getElementById('utrInput').value.trim();
-      if (!utr || utr.length < 8) {
-        document.getElementById('utrInput').style.borderColor = '#dc2626';
-        document.getElementById('utrInput').focus();
-        alert('Please enter your UPI Transaction ID / UTR number after paying.\n\nOpen GPay → Last transaction → Copy the transaction ID.');
-        return;
-      }
-      if (!confirm('Confirm ₹<?= $total ?> paid via UPI?\nTransaction ID: ' + utr)) return;
+      if (!confirm('Confirm you have completed ₹<?= $total ?> UPI payment?')) return;
       const btn = event.target;
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:7px;"></i>Placing order…';
-      window.location.href = `place_order.php?mode=UPI&utr=${encodeURIComponent(utr)}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
+      window.location.href = `place_order.php?mode=UPI&utr=UPI${Date.now()}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
     }
 
     function placeOrder() {
