@@ -3,32 +3,31 @@ require_once 'auth.php';
 require_once '../config.php';
 require_once '../connection.php';
 
-// ── SMS helper (vision360 API from config.php) ───────────────────────────────
+// ── SMS helper (Fast2SMS — no DLT template needed) ───────────────────────────
 function sendSMS($mobile, $message)
 {
-  // Build URL exactly like vision360 expects
-  $params = [
-    'authkey'    => SMS_AUTH_KEY,
-    'mobiles'    => '91' . $mobile,
-    'message'    => $message,
-    'sender'     => SMS_SENDER_ID,
-    'route'      => SMS_ROUTE,
-    'DLT_TE_ID'  => SMS_TEMPLATE_ID,
-  ];
-  $url = SMS_API_URL . '?' . http_build_query($params);
-
-  $ch = curl_init($url);
+  $apiKey = 'SZXD6GrHo0nKsNwhJaxCE8MAWlRV1ymgec7FO4qbYdUtTi35zu3yvpJ7b4ILKNEQk2R0sia85BVDoOXC';
+  $body = json_encode([
+    'route'   => 'q',
+    'message' => $message,
+    'numbers' => $mobile,
+  ]);
+  $ch = curl_init('https://www.fast2sms.com/dev/bulkV2');
   curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => $body,
+    CURLOPT_HTTPHEADER     => [
+      'authorization: ' . $apiKey,
+      'Content-Type: application/json',
+    ],
     CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_TIMEOUT        => 15,
-    CURLOPT_USERAGENT      => 'Mozilla/5.0',
   ]);
   $response = curl_exec($ch);
   $err      = curl_error($ch);
   curl_close($ch);
-  error_log("SMS vision360 to=$mobile | url=$url | resp=$response | err=$err");
+  error_log("Fast2SMS to=$mobile | resp=$response | err=$err");
   return $response;
 }
 

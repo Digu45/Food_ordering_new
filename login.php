@@ -268,14 +268,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verify_otp'])) {
           $('#lbl_num').text('+91 ' + mobile);
           $('#f_otp').val('');
 
-          // If SMS failed, show OTP on screen as fallback
-          if (!res.sms && res.otp) {
-            $('#otpDisplay').text(res.otp);
-            $('#otpFallbackBox').show();
-          } else {
-            $('#otpFallbackBox').hide();
+          if (res.status === 'error') {
+            alert('❌ ' + (res.msg || 'Could not send OTP. Please check Fast2SMS balance.'));
+            return;
           }
 
+          $('#otpFallbackBox').hide();
           $('#s1').hide();
           $('#s2').show();
           $('#f_otp').focus();
@@ -293,12 +291,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verify_otp'])) {
         $.post('send_otp.php', {
           mobile: $('#h_mobile').val()
         }, function(res) {
-          if (!res.sms && res.otp) {
-            $('#otpDisplay').text(res.otp);
-            $('#otpFallbackBox').show();
-          } else {
-            $('#otpFallbackBox').hide();
+          if (res.status === 'error') {
+            alert('❌ ' + (res.msg || 'Could not resend OTP. Please check Fast2SMS balance.'));
+            return;
           }
+          $('#otpFallbackBox').hide();
           $('#f_otp').val('');
           startTimer(60);
         }, 'json');

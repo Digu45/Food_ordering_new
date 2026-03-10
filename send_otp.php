@@ -14,9 +14,8 @@ $_SESSION['otp']        = $otp;
 $_SESSION['otp_mobile'] = $mobile;
 $_SESSION['otp_time']   = time();
 
-// ── Fast2SMS Quick SMS route (no website verification needed) ──
 $apiKey  = 'SZXD6GrHo0nKsNwhJaxCE8MAWlRV1ymgec7FO4qbYdUtTi35zu3yvpJ7b4ILKNEQk2R0sia85BVDoOXC';
-$message = "Your OTP for " . $_SERVER['HTTP_HOST'] . " is $otp. Valid for 5 minutes. Do not share with anyone.";
+$message = "Your OTP is $otp. Valid for 5 minutes. Do not share with anyone. - Digus Restaurant";
 
 $body = json_encode([
     'route'   => 'q',
@@ -41,7 +40,7 @@ $response = curl_exec($ch);
 $err      = curl_error($ch);
 curl_close($ch);
 
-error_log("Fast2SMS response: " . $response . " | curl_err: " . $err);
+error_log("Fast2SMS OTP to=$mobile | resp=$response | err=$err");
 
 $res  = json_decode($response, true);
 $sent = (!$err && isset($res['return']) && $res['return'] == true);
@@ -49,6 +48,9 @@ $sent = (!$err && isset($res['return']) && $res['return'] == true);
 if ($sent) {
     echo json_encode(['status' => 'success', 'sms' => true]);
 } else {
-    echo json_encode(['status' => 'success', 'sms' => false, 'otp' => $otp, 'debug' => $response]);
+    // Do NOT send OTP in response — clear session so no bypass
+    unset($_SESSION['otp'], $_SESSION['otp_mobile'], $_SESSION['otp_time']);
+    $errMsg = $res['message'][0] ?? 'SMS failed. Check your Fast2SMS balance.';
+    echo json_encode(['status' => 'error', 'sms' => false, 'msg' => $errMsg]);
 }
 exit;
