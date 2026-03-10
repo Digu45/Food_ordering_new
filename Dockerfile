@@ -1,9 +1,12 @@
 FROM php:8.1-apache
 
-# Enable mysqli extension
+# Install MySQL PHP extension
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# Copy all project files to web server
+# Set splash.php as the first page to open
+RUN echo "DirectoryIndex splash.php index.php index.html home.php" > /etc/apache2/conf-enabled/directoryindex.conf
+
+# Copy all project files
 COPY . /var/www/html/
 
 # Set permissions
