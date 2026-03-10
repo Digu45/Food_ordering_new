@@ -93,20 +93,27 @@ $menuCount    = $pdo->query("SELECT COUNT(*) FROM menu_master")->fetchColumn();
 // ── Orders ────────────────────────────────────────────────────────────────────
 $orders = $pdo->query("
     SELECT p.order_group_id AS gid,
-           p.mobile_no, p.customer_name,
-           p.grand_amt, p.status,
-           p.order_type, p.table_id,
-           p.area, p.address, p.landmark,
-           p.payment_method, p.payment_status, p.transaction_id,
-           p.created_at,
+           MAX(p.mobile_no) AS mobile_no,
+           MAX(p.customer_name) AS customer_name,
+           MAX(p.grand_amt) AS grand_amt,
+           MAX(p.status) AS status,
+           MAX(p.order_type) AS order_type,
+           MAX(p.table_id) AS table_id,
+           MAX(p.area) AS area,
+           MAX(p.address) AS address,
+           MAX(p.landmark) AS landmark,
+           MAX(p.payment_method) AS payment_method,
+           MAX(p.payment_status) AS payment_status,
+           MAX(p.transaction_id) AS transaction_id,
+           MAX(p.created_at) AS created_at,
            GROUP_CONCAT(CONCAT(p.qty,'x ', COALESCE(m.MenuName,'Item')) ORDER BY p.OrderId SEPARATOR ', ') AS summary,
            GROUP_CONCAT(CONCAT('<b>',p.qty,'x</b> ', COALESCE(m.MenuName,'Item'), ' — ₹',p.rate,' each') ORDER BY p.OrderId SEPARATOR '<br>') AS itemsHtml
     FROM placeorder p
     LEFT JOIN menu_master m ON m.MenuId = p.product_id
     GROUP BY p.order_group_id
     ORDER BY
-        FIELD(p.status,'Pending','Preparing','Ready','Completed','Cancelled'),
-        p.created_at DESC
+        FIELD(MAX(p.status),'Pending','Preparing','Ready','Completed','Cancelled'),
+        MAX(p.created_at) DESC
     LIMIT 300
 ")->fetchAll();
 
