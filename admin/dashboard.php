@@ -3,30 +3,26 @@ require_once 'auth.php';
 require_once '../config.php';
 require_once '../connection.php';
 
-// ── SMS helper (Fast2SMS — same API used for OTP) ────────────────────────────
+// ── SMS helper (vision360 — same API as OTP) ────────────────────────────────
 function sendSMS($mobile, $message)
 {
-  $apiKey = 'SZXD6GrHo0nKsNwhJaxCE8MAWlRV1ymgec7FO4qbYdUtTi35zu3yvpJ7b4ILKNEQk2R0sia85BVDoOXC';
-  $body = json_encode([
-    'route'   => 'q',
-    'message' => $message,
-    'numbers' => $mobile,
+  $url = SMS_API_URL . '?' . http_build_query([
+    'authkey'    => SMS_AUTH_KEY,
+    'mobiles'    => '91' . $mobile,
+    'message'    => $message,
+    'sender'     => SMS_SENDER_ID,
+    'route'      => SMS_ROUTE,
+    'DLT_TE_ID'  => SMS_TEMPLATE_ID,
   ]);
-  $ch = curl_init('https://www.fast2sms.com/dev/bulkV2');
+  $ch = curl_init($url);
   curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => $body,
-    CURLOPT_HTTPHEADER     => [
-      'authorization: ' . $apiKey,
-      'Content-Type: application/json',
-    ],
     CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_TIMEOUT        => 10,
   ]);
   $response = curl_exec($ch);
   curl_close($ch);
-  error_log("SMS to $mobile: $message | Response: $response");
+  error_log("SMS to $mobile | Response: $response");
   return $response;
 }
 
@@ -37,7 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
   $status  = trim($_POST['status'] ?? '');
   $allowed = ['Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled'];
   if ($gid && in_array($status, $allowed)) {
-    $pdo->prepare("UPDATE placeorder SET status=? WHERE order_group_id=?")->execute([$status, $gid]);
+    $stmt = $pdo->prepare("UPDATE placeorder SET status=? WHERE order_group_id=?");
+    $stmt->execute([$status, $gid]);
+    error_log("Status updated: gid=$gid status=$status rows=" . $stmt->rowCount());
 
     // When status = Ready → send SMS to customer
     if ($status === 'Ready') {
