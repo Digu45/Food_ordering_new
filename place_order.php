@@ -20,6 +20,7 @@ if (empty($items)) { header('Location: cart.php'); exit; }
 $mode       = $_GET['mode']     ?? 'COD';
 $utr        = $_GET['utr']      ?? '';
 $order_type = $_GET['type']     ?? 'Dine-in';
+$table_id   = $_GET['table']    ?? '';
 $area       = $_GET['area']     ?? '';
 $address    = $_GET['address']  ?? '';
 $landmark   = $_GET['landmark'] ?? '';
@@ -40,9 +41,9 @@ $ins = $pdo->prepare("
     INSERT INTO placeorder
     (mobile_no, customer_name, product_id, qty, rate, amount,
      sub_total, total_tax_amt, rounded_amt, grand_amt,
-     order_type, area, address, landmark,
+     order_type, table_id, area, address, landmark,
      Instructions, payment_method, payment_status, transaction_id, order_group_id)
-    VALUES (?,?,?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?,?)
+    VALUES (?,?,?,?,?,?, ?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)
 ");
 
 foreach ($items as $r) {
@@ -50,7 +51,7 @@ foreach ($items as $r) {
     $ins->execute([
         $mobile, $name, $r['MenuID'], $r['Quantity'], $r['Rate'], $amt,
         $sub, $cgst + $sgst, $roff, $total,
-        $order_type, $area, $address, $landmark,
+        $order_type, $table_id, $area, $address, $landmark,
         $r['Instructions'] ?? '', $mode, $pay_status, $txn_id, $gid
     ]);
 }
@@ -61,6 +62,7 @@ $pdo->prepare("DELETE FROM menu_items WHERE DeviceID=?")->execute([$device_id]);
 $_SESSION['last_order'] = [
     'gid'        => $gid,
     'order_type' => $order_type,
+    'table_id'   => $table_id,
     'area'       => $area,
     'address'    => $address,
     'landmark'   => $landmark,
