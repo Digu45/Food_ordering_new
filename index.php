@@ -113,6 +113,13 @@ if (!empty($_SESSION['mobile_verified'])) {
       <i class="fas fa-arrow-right" style="margin-right:8px;"></i>Order Now
     </a>
     <p style="color:rgba(255,255,255,.3);font-size:12px;margin-top:14px;">Login required to view menu &amp; order</p>
+
+    <!-- Admin Login -->
+    <a href="admin/login.php" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.45);font-weight:600;font-size:13px;text-decoration:none;margin-top:12px;transition:.2s;"
+      onmouseover="this.style.background='rgba(255,255,255,.13)';this.style.color='rgba(255,255,255,.8)'"
+      onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.color='rgba(255,255,255,.45)'">
+      <i class="fas fa-user-shield" style="font-size:13px;"></i> Admin Login
+    </a>
   </div>
 </body>
 
