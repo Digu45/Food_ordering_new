@@ -1,7 +1,7 @@
 FROM php:8.1-apache
 
 # Enable mysqli extension
-RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 # Copy all project files to web server
 COPY . /var/www/html/
