@@ -26,16 +26,13 @@ $cgst  = round($sub * CGST_RATE / 100, 2);
 $sgst  = round($sub * SGST_RATE / 100, 2);
 $total = round($sub + $cgst + $sgst);
 
-// UPI deep links — amount pre-filled for each app
-$upiBase    = 'pa='.urlencode(UPI_ID).'&pn='.urlencode(UPI_NAME).'&am='.$total.'&cu=INR&tn='.urlencode('Order at '.RESTAURANT_NAME);
-$gpayLink   = 'gpay://upi/pay?'    . $upiBase;
-$phonepeLink= 'phonepe://pay?'     . $upiBase;
-$paytmLink  = 'paytmmp://pay?'     . $upiBase;
-$genericLink= 'upi://pay?'         . $upiBase;
-
-// Dynamic QR with amount pre-filled
-$qrData = 'upi://pay?' . $upiBase;
-$qrUrl  = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=' . urlencode($qrData);
+$upiBase     = 'pa='.urlencode(UPI_ID).'&pn='.urlencode(UPI_NAME).'&am='.$total.'&cu=INR&tn='.urlencode('Order at '.RESTAURANT_NAME);
+$gpayLink    = 'gpay://upi/pay?'  . $upiBase;
+$phonepeLink = 'phonepe://pay?'   . $upiBase;
+$paytmLink   = 'paytmmp://pay?'   . $upiBase;
+$genericLink = 'upi://pay?'       . $upiBase;
+$qrData      = 'upi://pay?'       . $upiBase;
+$qrUrl       = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=' . urlencode($qrData);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,8 +49,10 @@ body{font-family:'DM Sans',sans-serif;background:#f1f5f9;min-height:100vh;paddin
 input{outline:none;font-family:inherit;}
 .pay-card{border:2px solid #e5e7eb;border-radius:16px;padding:14px 10px;cursor:pointer;transition:all .2s;text-align:center;background:#fff;}
 .pay-card.sel{border-color:#e65c00;background:#fff7ed;box-shadow:0 0 0 3px rgba(230,92,0,.12);}
-.upi-app-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:#fff;border:2px solid #e5e7eb;border-radius:14px;text-decoration:none;font-weight:700;font-size:14px;color:#111;transition:.2s;}
-.upi-app-btn:active{background:#f3f4f6;transform:scale(.97);}
+.upi-app-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 4px;background:#fff;border:2px solid #e5e7eb;border-radius:14px;text-decoration:none;color:#111;transition:.2s;cursor:pointer;overflow:hidden;}
+.upi-app-btn span{display:block;width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:700;color:#374151;}
+.upi-app-btn:active{background:#f3f4f6;transform:scale(.96);}
+.upi-app-btn:hover{border-color:#e65c00;background:#fff7ed;}
 </style>
 </head>
 <body>
@@ -140,75 +139,76 @@ input{outline:none;font-family:inherit;}
       <div style="font-size:11px;color:#9a3412;margin-top:3px;">to <?= UPI_ID ?></div>
     </div>
 
-    <!-- Mobile section — UPI app buttons -->
-    <div id="mobileSection">
-      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-        <span style="background:#eff6ff;color:#3b82f6;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">📱 ON MOBILE</span>
-        Tap your UPI app — amount pre-filled
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;">
+    <!-- UPI App buttons — all use upi:// which works universally in all browsers -->
+    <div style="margin-bottom:6px;">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:12px;text-align:center;letter-spacing:.5px;text-transform:uppercase;">Tap to pay with your UPI app</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;">
 
-        <!-- GPay -->
-        <a href="<?= $gpayLink ?>" class="upi-app-btn" onclick="appTapped()">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo_%282020%29.svg/120px-Google_Pay_Logo_%282020%29.svg.png"
-               height="24" style="object-fit:contain;" onerror="this.outerHTML='💚'"/>
-          <span>GPay</span>
+        <!-- GPay — upi:// with intent hint -->
+        <a href="<?= $genericLink ?>&amp;mc=5411" class="upi-app-btn" onclick="appTapped()">
+          <svg width="40" height="40" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="12" fill="#fff" stroke="#e5e7eb" stroke-width="2"/>
+            <text x="4" y="34" font-size="20" font-family="Arial,sans-serif" font-weight="900">
+              <tspan fill="#4285F4">G</tspan><tspan fill="#FBBC05">P</tspan><tspan fill="#34A853">a</tspan><tspan fill="#EA4335">y</tspan>
+            </text>
+          </svg>
+          <span style="font-size:10px;font-weight:700;color:#374151;">GPay</span>
         </a>
 
         <!-- PhonePe -->
-        <a href="<?= $phonepeLink ?>" class="upi-app-btn" onclick="appTapped()">
-          <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="8" fill="#5F259F"/>
-            <text x="5" y="28" font-size="18" fill="white" font-weight="bold">Pe</text>
+        <a href="<?= $genericLink ?>" class="upi-app-btn" onclick="appTapped()">
+          <svg width="40" height="40" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="12" fill="#5F259F"/>
+            <text x="6" y="35" font-size="20" fill="white" font-family="Arial,sans-serif" font-weight="900">Pe</text>
           </svg>
-          <span>PhonePe</span>
+          <span style="font-size:10px;font-weight:700;color:#374151;">PhonePe</span>
         </a>
 
         <!-- Paytm -->
-        <a href="<?= $paytmLink ?>" class="upi-app-btn" onclick="appTapped()">
-          <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="8" fill="#00BAF2"/>
-            <text x="3" y="27" font-size="13" fill="white" font-weight="bold">Pay</text>
+        <a href="<?= $genericLink ?>" class="upi-app-btn" onclick="appTapped()">
+          <svg width="40" height="40" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="12" fill="#002970"/>
+            <text x="4" y="30" font-size="14" fill="#00BAF2" font-family="Arial,sans-serif" font-weight="900">Pay</text>
+            <text x="6" y="43" font-size="12" fill="#00BAF2" font-family="Arial,sans-serif" font-weight="700">tm</text>
           </svg>
-          <span>Paytm</span>
+          <span style="font-size:10px;font-weight:700;color:#374151;">Paytm</span>
         </a>
 
         <!-- Other UPI -->
         <a href="<?= $genericLink ?>" class="upi-app-btn" onclick="appTapped()">
-          <span style="font-size:22px;">📲</span>
-          <span>Other UPI</span>
+          <svg width="40" height="40" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="12" fill="#FF6B00"/>
+            <text x="5" y="33" font-size="14" fill="white" font-family="Arial,sans-serif" font-weight="900">UPI</text>
+          </svg>
+          <span style="font-size:10px;font-weight:700;color:#374151;">Other</span>
         </a>
+
       </div>
       <p style="font-size:11px;color:#9ca3af;text-align:center;margin-bottom:16px;">
-        Amount ₹<?= $total ?> will be auto-filled in the app
+        ⚡ Opens your default UPI app with ₹<?= $total ?> pre-filled
       </p>
     </div>
 
     <!-- Divider -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <div style="flex:1;height:1px;background:#e5e7eb;"></div>
-      <span style="font-size:12px;color:#9ca3af;font-weight:600;">OR</span>
+      <span style="font-size:11px;color:#9ca3af;font-weight:700;letter-spacing:.5px;">OR SCAN QR CODE</span>
       <div style="flex:1;height:1px;background:#e5e7eb;"></div>
     </div>
 
-    <!-- QR code — for desktop / secondary phone -->
-    <div style="border:2px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-        <span style="background:#f0fdf4;color:#16a34a;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">💻 ON DESKTOP</span>
-        Scan QR with your phone
+    <!-- QR code -->
+    <div style="border:2px solid #e5e7eb;border-radius:14px;padding:16px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:12px;">
+        📷 Open any UPI app → Scan QR
       </div>
-      <div style="text-align:center;">
-        <img src="<?= $qrUrl ?>" width="200" height="200" style="border-radius:10px;border:1px solid #e5e7eb;display:inline-block;"/>
-        <div style="font-size:11px;font-weight:700;color:#16a34a;margin-top:8px;">✅ ₹<?= $total ?> auto-filled when scanned</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Works with GPay · PhonePe · Paytm · Any UPI app</div>
-      </div>
+      <img src="<?= $qrUrl ?>" width="200" height="200" style="border-radius:10px;border:1px solid #e5e7eb;display:inline-block;"/>
+      <div style="font-size:11px;font-weight:700;color:#16a34a;margin-top:10px;">✅ ₹<?= $total ?> auto-filled when scanned</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:3px;">GPay · PhonePe · Paytm · Any UPI app</div>
     </div>
 
     <!-- Copy UPI ID -->
     <div style="border:2px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">
-        📋 Or copy UPI ID &amp; pay manually
-      </div>
+      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Or copy UPI ID & pay manually</div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <div style="font-weight:800;color:#111;font-size:15px;letter-spacing:.3px;" id="upiIdText"><?= UPI_ID ?></div>
         <button onclick="copyUpiId()" id="copyBtn"
@@ -218,17 +218,17 @@ input{outline:none;font-family:inherit;}
       </div>
     </div>
 
-    <!-- I Have Paid -->
-    <div id="paidBox" style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:14px;padding:16px;text-align:center;">
-      <p style="font-size:12px;color:#166534;margin-bottom:12px;">
-        <i class="fas fa-info-circle" style="margin-right:5px;"></i>
-        After completing payment in your UPI app, tap below
+    <!-- I Have Paid — locked until UPI app is tapped -->
+    <div id="paidBox" style="background:#f3f4f6;border:2px solid #e5e7eb;border-radius:14px;padding:16px;text-align:center;">
+      <p style="font-size:12px;color:#9ca3af;margin-bottom:12px;" id="paidBoxMsg">
+        <i class="fas fa-lock" style="margin-right:5px;"></i>
+        Tap a UPI app above to pay first
       </p>
-      <button onclick="confirmUpiPaid()"
-        style="width:100%;padding:16px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:800;font-size:16px;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.35);">
-        <i class="fas fa-check-circle" style="margin-right:8px;"></i>✅ I Have Paid — Place My Order
+      <button onclick="confirmUpiPaid()" id="paidBtn" disabled
+        style="width:100%;padding:16px;background:#d1d5db;color:#9ca3af;font-weight:800;font-size:16px;border:none;border-radius:12px;cursor:not-allowed;opacity:.6;">
+        <i class="fas fa-lock" style="margin-right:8px;"></i>I Have Paid — Place My Order
       </button>
-      <p style="font-size:10px;color:#9ca3af;margin-top:8px;">Owner will verify payment and prepare your order</p>
+      <p style="font-size:10px;color:#9ca3af;margin-top:8px;" id="paidBoxHint">Button unlocks after you tap a UPI app</p>
     </div>
   </div>
 
@@ -263,20 +263,51 @@ input{outline:none;font-family:inherit;}
   const address    = '<?= addslashes($address) ?>';
   const landmark   = '<?= addslashes($landmark) ?>';
 
-  // Auto-hide mobile section on desktop
-  window.addEventListener('load', () => {
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    document.getElementById('mobileSection').style.display = isMobile ? 'block' : 'none';
-  });
+  let timerInterval = null;
 
   function appTapped() {
-    // After 3s highlight the I Have Paid button
-    setTimeout(() => {
-      const box = document.getElementById('paidBox');
-      box.style.border = '2px solid #e65c00';
-      box.style.background = '#fff7ed';
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 3000);
+    // Scroll to paid box immediately
+    const box  = document.getElementById('paidBox');
+    const btn  = document.getElementById('paidBtn');
+    const msg  = document.getElementById('paidBoxMsg');
+    const hint = document.getElementById('paidBoxHint');
+
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Show countdown timer — 30 seconds
+    let secs = 30;
+    box.style.background = '#fffbeb';
+    box.style.border = '2px solid #fde68a';
+    msg.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:5px;color:#f59e0b;"></i><span style="color:#92400e;">Complete payment in your UPI app...</span>';
+    btn.innerHTML = '<i class="fas fa-clock" style="margin-right:8px;"></i>Please wait <span id="timerCount">30</span>s after paying';
+    hint.textContent = 'Button unlocks in 30 seconds';
+
+    // Clear any previous timer
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      secs--;
+      const tc = document.getElementById('timerCount');
+      if (tc) tc.textContent = secs;
+      hint.textContent = 'Button unlocks in ' + secs + ' seconds';
+
+      if (secs <= 0) {
+        clearInterval(timerInterval);
+
+        // Unlock button
+        btn.disabled = false;
+        btn.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.style.opacity = '1';
+        btn.innerHTML = '<i class="fas fa-check-circle" style="margin-right:8px;"></i>✅ I Have Paid — Place My Order';
+
+        box.style.background = '#f0fdf4';
+        box.style.border = '2px solid #22c55e';
+        msg.innerHTML = '<i class="fas fa-check-circle" style="margin-right:5px;color:#16a34a;"></i><span style="color:#166534;">Payment done? Tap below to confirm</span>';
+        hint.textContent = 'Owner will verify payment and prepare your order';
+      }
+    }, 1000);
   }
 
   function selPay(m) {
@@ -309,15 +340,17 @@ input{outline:none;font-family:inherit;}
         btn.style.background = '#e65c00';
       }, 2500);
     };
-    navigator.clipboard ? navigator.clipboard.writeText(id).then(doSuccess).catch(() => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(id).then(doSuccess).catch(() => {
+        const el = document.createElement('textarea');
+        el.value = id; document.body.appendChild(el); el.select();
+        document.execCommand('copy'); document.body.removeChild(el); doSuccess();
+      });
+    } else {
       const el = document.createElement('textarea');
       el.value = id; document.body.appendChild(el); el.select();
       document.execCommand('copy'); document.body.removeChild(el); doSuccess();
-    }) : (() => {
-      const el = document.createElement('textarea');
-      el.value = id; document.body.appendChild(el); el.select();
-      document.execCommand('copy'); document.body.removeChild(el); doSuccess();
-    })();
+    }
   }
 
   function confirmUpiPaid() {

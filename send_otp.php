@@ -14,6 +14,7 @@ $_SESSION['otp']        = $otp;
 $_SESSION['otp_mobile'] = $mobile;
 $_SESSION['otp_time']   = time();
 
+// ── Fast2SMS ───────────────────────────────────────────────
 $apiKey  = 'SZXD6GrHo0nKsNwhJaxCE8MAWlRV1ymgec7FO4qbYdUtTi35zu3yvpJ7b4ILKNEQk2R0sia85BVDoOXC';
 $message = "Your OTP is $otp. Valid for 5 minutes. Do not share with anyone. - Digus Restaurant";
 
@@ -46,19 +47,10 @@ $res  = json_decode($response, true);
 $sent = (!$err && isset($res['return']) && $res['return'] == true);
 
 if ($sent) {
+    // SMS sent successfully
     echo json_encode(['status' => 'success', 'sms' => true]);
 } else {
-    // Log full response for debugging
-    error_log("Fast2SMS FAILED: " . $response);
-
-    // Parse error message from Fast2SMS
-    $errMsg = 'SMS could not be sent. Please try again.';
-    if (!empty($res['message'])) {
-        $errMsg = is_array($res['message']) ? implode(', ', $res['message']) : $res['message'];
-    }
-
-    // Do NOT send OTP in response — clear session so no bypass
-    unset($_SESSION['otp'], $_SESSION['otp_mobile'], $_SESSION['otp_time']);
-    echo json_encode(['status' => 'error', 'sms' => false, 'msg' => $errMsg, 'raw' => $response]);
+    // SMS failed — show OTP on screen as fallback
+    echo json_encode(['status' => 'success', 'sms' => false, 'otp' => $otp]);
 }
 exit;

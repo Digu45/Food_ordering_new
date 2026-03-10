@@ -3,7 +3,7 @@ require_once 'auth.php';
 require_once '../config.php';
 require_once '../connection.php';
 
-// ── SMS helper (Fast2SMS — no DLT template needed) ───────────────────────────
+// ── SMS helper (Fast2SMS) ─────────────────────────────────────────────────────
 function sendSMS($mobile, $message)
 {
   $apiKey = 'SZXD6GrHo0nKsNwhJaxCE8MAWlRV1ymgec7FO4qbYdUtTi35zu3yvpJ7b4ILKNEQk2R0sia85BVDoOXC';
