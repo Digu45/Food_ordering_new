@@ -1,10 +1,9 @@
 FROM php:8.1-apache
 
-# Install PostgreSQL PHP extension
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql pgsql mysqli
+# Enable mysqli extension
+RUN docker-php-ext-install mysqli
 
-# Copy all project files
+# Copy all project files to web server
 COPY . /var/www/html/
 
 # Set permissions

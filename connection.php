@@ -1,19 +1,9 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-$port = defined('DB_PORT') ? DB_PORT : '3306';
-$type = defined('DB_TYPE') ? DB_TYPE : 'mysql';
-
-// Build DSN based on database type
-if($type == 'pgsql'){
-    $dsn = 'pgsql:host='.DB_HOST.';port='.$port.';dbname='.DB_NAME;
-} else {
-    $dsn = 'mysql:host='.DB_HOST.';port='.$port.';dbname='.DB_NAME.';charset=utf8mb4';
-}
-
 try {
     $pdo = new PDO(
-        $dsn,
+        'mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset=utf8mb4',
         DB_USER, DB_PASS,
         [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -25,4 +15,3 @@ try {
     error_log('DB Error: ' . $e->getMessage());
     die(json_encode(['error' => 'Database connection failed']));
 }
-?>
