@@ -34,7 +34,6 @@ $sgst  = round($sub * SGST_RATE / 100, 2);
 $total = round($sub + $cgst + $sgst);
 
 $upiLink = 'upi://pay?pa=' . urlencode(UPI_ID) . '&pn=' . urlencode(UPI_NAME) . '&am=' . $total . '&cu=INR&tn=' . urlencode('Order at ' . RESTAURANT_NAME);
-$qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlencode($upiLink) . '&choe=UTF-8';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -145,17 +144,13 @@ $qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlenc
     <!-- Payment method -->
     <div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
       <div style="font-weight:700;font-size:14px;color:#111;margin-bottom:12px;"><i class="fas fa-credit-card" style="color:#e65c00;margin-right:7px;"></i>Payment Method</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
         <div class="pay-card" id="pc-UPI" onclick="selPay('UPI')">
           <div style="font-size:26px;margin-bottom:6px;">📲</div>
           <div style="font-weight:700;font-size:13px;">UPI</div>
           <div style="font-size:11px;color:#9ca3af;margin-top:2px;">GPay·PhonePe</div>
         </div>
-        <div class="pay-card" id="pc-CARD" onclick="selPay('CARD')">
-          <div style="font-size:26px;margin-bottom:6px;">💳</div>
-          <div style="font-weight:700;font-size:13px;">Card</div>
-          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Debit/Credit</div>
-        </div>
+
         <div class="pay-card" id="pc-COD" onclick="selPay('COD')">
           <div style="font-size:26px;margin-bottom:6px;">💵</div>
           <div style="font-weight:700;font-size:13px;">Cash</div>
@@ -166,35 +161,46 @@ $qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlenc
     </div>
 
     <!-- UPI panel -->
-    <div id="upiPanel" style="display:none;background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;">
-      <div style="font-weight:700;font-size:14px;color:#111;margin-bottom:14px;">Scan QR to Pay</div>
-      <div style="display:inline-block;padding:10px;border:2px solid #e5e7eb;border-radius:16px;margin-bottom:12px;">
-        <img src="<?= $qrUrl ?>" width="200" height="200" style="display:block;" onerror="this.parentElement.innerHTML='<p style=\'color:#dc2626;font-size:12px;padding:20px;\'>QR load failed. Use button below.</p>'" />
+    <div id="upiPanel" style="display:none;background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+      <div style="font-weight:700;font-size:14px;color:#111;margin-bottom:14px;text-align:center;">
+        <i class="fas fa-qrcode" style="color:#e65c00;margin-right:7px;"></i>Pay via UPI
       </div>
-      <div style="background:#fff7ed;border-radius:12px;padding:10px 14px;margin-bottom:14px;">
-        <div style="font-size:12px;color:#9a3412;margin-bottom:4px;">UPI ID</div>
-        <div style="font-weight:700;color:#111;font-size:15px;"><?= UPI_ID ?></div>
-        <div style="font-weight:900;color:#e65c00;font-size:22px;margin-top:4px;">₹<?= $total ?></div>
-      </div>
-      <a href="<?= htmlspecialchars($upiLink) ?>" style="display:block;padding:12px;background:#22c55e;color:#fff;font-weight:700;border-radius:12px;text-decoration:none;margin-bottom:14px;">
-        <i class="fas fa-external-link-alt" style="margin-right:7px;"></i>Open UPI App · ₹<?= $total ?>
-      </a>
-      <div style="text-align:left;">
-        <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Enter UTR / Transaction ID <span style="color:#dc2626;">*</span></label>
-        <input type="text" id="utrInput" placeholder="e.g. T2406131234567890"
-          style="width:100%;padding:13px 14px;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:monospace;" />
-        <p style="font-size:11px;color:#9ca3af;margin-top:6px;"><i class="fas fa-info-circle" style="margin-right:4px;"></i>Find UTR in your UPI app after payment</p>
-      </div>
-    </div>
 
-    <!-- Card panel -->
-    <div id="cardPanel" style="display:none;background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-      <div style="display:flex;align-items:center;gap:12px;background:#eff6ff;border-radius:12px;padding:14px;">
-        <i class="fas fa-credit-card" style="color:#3b82f6;font-size:22px;"></i>
-        <div>
-          <div style="font-weight:600;font-size:14px;color:#111;">Card Payment</div>
-          <div style="font-size:12px;color:#6b7280;margin-top:2px;">Pay ₹<?= $total ?> at the counter with your card</div>
+      <!-- Steps -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <?php foreach([['1','Open any UPI app (GPay / PhonePe / Paytm)','#3b82f6'],['2','Scan QR & pay ₹<?= $total ?>','#8b5cf6'],['3','Tap I Have Paid below','#22c55e']] as [$n,$t,$c]): ?>
+        <div style="flex:1;text-align:center;">
+          <div style="width:26px;height:26px;background:<?= $c ?>;border-radius:50%;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;"><?= $n ?></div>
+          <div style="font-size:10px;color:#6b7280;line-height:1.3;"><?= $t ?></div>
         </div>
+        <?php endforeach; ?>
+      </div>
+
+      <!-- Static QR image -->
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="display:inline-block;padding:12px;border:2px solid #e5e7eb;border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <img src="upi_qr.jpg" width="220" height="220" style="display:block;border-radius:8px;" alt="UPI QR Code" />
+        </div>
+        <p style="font-size:11px;color:#9ca3af;margin-top:6px;">Scan with GPay · PhonePe · Paytm · Any UPI app</p>
+      </div>
+
+      <!-- UPI ID + amount -->
+      <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:12px 14px;margin-bottom:14px;text-align:center;">
+        <div style="font-size:11px;color:#9a3412;font-weight:600;margin-bottom:3px;">Pay to UPI ID</div>
+        <div style="font-weight:700;color:#111;font-size:16px;letter-spacing:.5px;"><?= UPI_ID ?></div>
+        <div style="font-weight:900;color:#e65c00;font-size:28px;margin-top:6px;">₹<?= $total ?></div>
+      </div>
+
+      <!-- I Have Paid button -->
+      <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:14px;text-align:center;">
+        <p style="font-size:12px;color:#166534;margin-bottom:10px;">
+          <i class="fas fa-info-circle" style="margin-right:4px;"></i>
+          After completing payment, tap the button below
+        </p>
+        <button onclick="confirmUpiPaid()"
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#e65c00,#f9a84d);color:#fff;font-weight:700;font-size:15px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 14px rgba(230,92,0,.35);">
+          <i class="fas fa-check-circle" style="margin-right:7px;"></i>✅ I Have Paid — Place My Order
+        </button>
       </div>
     </div>
 
@@ -231,13 +237,11 @@ $qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlenc
 
     function selPay(m) {
       method = m;
-      ['UPI', 'CARD', 'COD'].forEach(k => {
-        document.getElementById('pc-' + k).classList.remove('sel');
-        document.getElementById({
-          UPI: 'upiPanel',
-          CARD: 'cardPanel',
-          COD: 'codPanel'
-        } [k]).style.display = 'none';
+      ['UPI', 'COD'].forEach(k => {
+        const pc = document.getElementById('pc-' + k);
+        if (pc) pc.classList.remove('sel');
+        const panel = document.getElementById({UPI:'upiPanel',COD:'codPanel'}[k]);
+        if (panel) panel.style.display = 'none';
       });
       document.getElementById('pc-' + m).classList.add('sel');
       document.getElementById({
@@ -251,10 +255,33 @@ $qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlenc
       btn.style.opacity = '1';
       const labels = {
         UPI: '<i class="fas fa-qrcode" style="margin-right:8px;"></i>Confirm UPI · ₹<?= $total ?>',
-        CARD: '<i class="fas fa-credit-card" style="margin-right:8px;"></i>Pay ₹<?= $total ?> by Card',
         COD: '<i class="fas fa-check-circle" style="margin-right:8px;"></i>Place Order · Pay ₹<?= $total ?> Cash',
       };
       btn.innerHTML = labels[m];
+    }
+
+    // Called when customer taps Open UPI App
+    function upiAppOpened() {
+      // Small delay then show the paid confirm box prominently
+      setTimeout(() => {
+        const box = document.getElementById('paidConfirmBox');
+        if (box) {
+          box.style.border = '2px solid #e65c00';
+          box.style.background = '#fff7ed';
+          box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 2000);
+    }
+
+    // Called when customer taps "I Have Paid"
+    function confirmUpiPaid() {
+      if (!confirm('Confirm you have completed ₹<?= $total ?> UPI payment?')) return;
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:7px;"></i>Placing order…';
+      // Use timestamp as reference since no UTR needed
+      const ref = 'UPI' + Date.now();
+      window.location.href = `place_order.php?mode=UPI&utr=${encodeURIComponent(ref)}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
     }
 
     function placeOrder() {
@@ -263,19 +290,17 @@ $qrUrl   = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' . urlenc
         return;
       }
       if (method === 'UPI') {
-        const utr = document.getElementById('utrInput').value.trim();
-        if (!utr) {
-          alert('Please enter the UTR / Transaction ID after making UPI payment.');
-          return;
-        }
-        if (!confirm('Confirm order · ₹<?= $total ?> via UPI?')) return;
-        window.location.href = `place_order.php?mode=UPI&utr=${encodeURIComponent(utr)}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
-      } else {
-        if (!confirm(`Confirm order · ₹<?= $total ?> by ${method}?`)) return;
-        window.location.href = `place_order.php?mode=${method}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
+        // UPI is handled by confirmUpiPaid() button — scroll to it
+        document.getElementById('paidConfirmBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('paidConfirmBox').style.border = '2px solid #e65c00';
+        return;
       }
+      if (!confirm(`Confirm order · ₹<?= $total ?> by Cash?`)) return;
+      window.location.href = `place_order.php?mode=${method}&type=${encodeURIComponent(orderType)}&table=${encodeURIComponent(tableId)}&area=${encodeURIComponent(area)}&address=${encodeURIComponent(address)}&landmark=${encodeURIComponent(landmark)}`;
     }
   </script>
+
+
 </body>
 
 </html>

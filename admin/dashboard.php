@@ -105,7 +105,7 @@ $orders = $pdo->query("
            MAX(p.address) AS address,
            MAX(p.landmark) AS landmark,
            MAX(p.payment_method) AS payment_method,
-           MAX(p.payment_status) AS payment_status,
+           MIN(p.payment_status) AS payment_status, -- MIN: 'Paid' < 'Pending' alphabetically
            MAX(p.transaction_id) AS transaction_id,
            MAX(p.created_at) AS created_at,
            GROUP_CONCAT(CONCAT(p.qty,'x ', COALESCE(m.MenuName,'Item')) ORDER BY p.OrderId SEPARATOR ', ') AS summary,

@@ -19,7 +19,7 @@ $orders = $pdo->prepare("
            MAX(p.grand_amt) AS grand_amt,
            MAX(p.status) AS status,
            MAX(p.payment_method) AS payment_method,
-           MAX(p.payment_status) AS payment_status,
+           MIN(p.payment_status) AS payment_status, -- MIN: 'Paid' < 'Pending' alphabetically
            MAX(p.created_at) AS created_at,
            GROUP_CONCAT(CONCAT(p.qty,'× ', COALESCE(m.MenuName,'Item')) ORDER BY p.OrderId SEPARATOR ', ') AS items
     FROM placeorder p
@@ -112,8 +112,13 @@ $statusColor = [
             </div>
             <div style="text-align:right;flex-shrink:0;">
               <div style="font-size:20px;font-weight:800;color:#e65c00;">₹<?= number_format($o['grand_amt'], 2) ?></div>
-              <div style="font-size:11px;font-weight:600;color:<?= $o['payment_status'] === 'Paid' ? '#16a34a' : '#d97706' ?>;">
-                <?= $o['payment_status'] === 'Paid' ? '✅ Paid' : '⏳ Unpaid' ?>
+              <?php
+                // UPI/Card = always paid (customer paid online), COD = depends on payment_status
+                $isPaid = $o['payment_status'] === 'Paid'
+                          || in_array($o['payment_method'], ['UPI','CARD']);
+              ?>
+              <div style="font-size:11px;font-weight:600;color:<?= $isPaid ? '#16a34a' : '#d97706' ?>;">
+                <?= $isPaid ? '✅ Paid' : '⏳ Payment Pending' ?>
               </div>
             </div>
           </div>
