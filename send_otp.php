@@ -48,9 +48,17 @@ $sent = (!$err && isset($res['return']) && $res['return'] == true);
 if ($sent) {
     echo json_encode(['status' => 'success', 'sms' => true]);
 } else {
+    // Log full response for debugging
+    error_log("Fast2SMS FAILED: " . $response);
+
+    // Parse error message from Fast2SMS
+    $errMsg = 'SMS could not be sent. Please try again.';
+    if (!empty($res['message'])) {
+        $errMsg = is_array($res['message']) ? implode(', ', $res['message']) : $res['message'];
+    }
+
     // Do NOT send OTP in response — clear session so no bypass
     unset($_SESSION['otp'], $_SESSION['otp_mobile'], $_SESSION['otp_time']);
-    $errMsg = $res['message'][0] ?? 'SMS failed. Check your Fast2SMS balance.';
-    echo json_encode(['status' => 'error', 'sms' => false, 'msg' => $errMsg]);
+    echo json_encode(['status' => 'error', 'sms' => false, 'msg' => $errMsg, 'raw' => $response]);
 }
 exit;
