@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verify_otp'])) {
       <p style="color:#6b7280;font-size:14px;margin-bottom:22px;">Enter your details to receive OTP</p>
       <div style="margin-bottom:18px;">
         <label class="lbl">Your Name</label>
-        <input type="text" id="f_name" class="inp" placeholder="e.g. Rahul Patil" autocomplete="name" />
+        <input type="text" id="f_name" class="inp" placeholder="e.g. Digvijay Vapilkar" autocomplete="name" />
       </div>
       <div style="margin-bottom:26px;">
         <label class="lbl">Mobile Number</label>
