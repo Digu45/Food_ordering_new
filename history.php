@@ -3,7 +3,7 @@ session_start();
 require_once 'config.php';
 require_once 'connection.php';
 
-if (empty($_SESSION['mobile_verified'])) { header('Location: index.php'); exit; }
+if (empty($_SESSION['mobile_verified'])) { header('Location: login.php'); exit; }
 
 $mobile = $_SESSION['mobile'] ?? '';
 

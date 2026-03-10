@@ -5,7 +5,7 @@ require_once 'connection.php';
 
 // ── Must be logged in ──────────────────────────────────────
 if (empty($_SESSION['mobile_verified'])) {
-    header('Location: index.php'); exit;
+    header('Location: login.php'); exit;
 }
 
 // Assign device ID if missing
@@ -124,7 +124,7 @@ foreach ($cq->fetchAll() as $r) $cartQtys[$r['MenuID']] = $r['Quantity'];
         <i class="fas fa-sign-out-alt text-sm"></i>
       </a>
       <?php else: ?>
-      <a href="index.php" class="bg-orange-500 text-white text-xs font-bold px-3 py-2 rounded-xl">Login</a>
+      <a href="login.php" class="bg-orange-500 text-white text-xs font-bold px-3 py-2 rounded-xl">Login</a>
       <?php endif; ?>
     </div>
   </div>

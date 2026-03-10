@@ -2,7 +2,7 @@
 session_start();
 require_once 'config.php';
 
-if (empty($_SESSION['mobile_verified'])) { header('Location: index.php'); exit; }
+if (empty($_SESSION['mobile_verified'])) { header('Location: login.php'); exit; }
 $o = $_SESSION['last_order'] ?? null;
 if (!$o) { header('Location: home.php'); exit; }
 $isTakeaway = ($o['order_type'] === 'Takeaway');

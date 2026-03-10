@@ -3,7 +3,7 @@ session_start();
 require_once 'config.php';
 require_once 'connection.php';
 
-if (empty($_SESSION['mobile_verified'])) { header('Location: index.php'); exit; }
+if (empty($_SESSION['mobile_verified'])) { header('Location: login.php'); exit; }
 
 $device_id  = $_SESSION['unique_device_id'] ?? '';
 if (!$device_id) { header('Location: cart.php'); exit; }
