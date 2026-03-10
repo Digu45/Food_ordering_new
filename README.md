@@ -64,7 +64,7 @@ define('DB_NAME', 'restaurant_db');
 
 ### 5. Open in browser
 ```
-http://localhost/online_food/splash.php
+http://localhost/online_food/index.php
 http://localhost/online_food/admin/login.php
 ```
 
@@ -80,8 +80,8 @@ http://localhost/online_food/admin/login.php
 online_food/
 ├── config.php              ← DB & app settings (edit this)
 ├── connection.php          ← PDO + MySQLi connection
-├── splash.php              ← Landing page
-├── index.php               ← OTP login
+├── index.php              ← Landing page
+├── login.php               ← OTP login
 ├── home.php                ← Menu browser
 ├── cart.php                ← Cart page
 ├── checkout.php            ← Payment selection

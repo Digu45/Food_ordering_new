@@ -10,4 +10,4 @@ unset(
     $_SESSION['otp_mobile']
 );
 // ✅ Go to splash page after logout
-header('Location: splash.php'); exit;
+header('Location: index.php'); exit;
