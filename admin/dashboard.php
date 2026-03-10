@@ -3,26 +3,32 @@ require_once 'auth.php';
 require_once '../config.php';
 require_once '../connection.php';
 
-// ── SMS helper (vision360 — same API as OTP) ────────────────────────────────
+// ── SMS helper (vision360 API from config.php) ───────────────────────────────
 function sendSMS($mobile, $message)
 {
-  $url = SMS_API_URL . '?' . http_build_query([
+  // Build URL exactly like vision360 expects
+  $params = [
     'authkey'    => SMS_AUTH_KEY,
     'mobiles'    => '91' . $mobile,
     'message'    => $message,
     'sender'     => SMS_SENDER_ID,
     'route'      => SMS_ROUTE,
     'DLT_TE_ID'  => SMS_TEMPLATE_ID,
-  ]);
+  ];
+  $url = SMS_API_URL . '?' . http_build_query($params);
+
   $ch = curl_init($url);
   curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_SSL_VERIFYPEER => false,
-    CURLOPT_TIMEOUT        => 10,
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_USERAGENT      => 'Mozilla/5.0',
   ]);
   $response = curl_exec($ch);
+  $err      = curl_error($ch);
   curl_close($ch);
-  error_log("SMS to $mobile | Response: $response");
+  error_log("SMS vision360 to=$mobile | url=$url | resp=$response | err=$err");
   return $response;
 }
 
@@ -33,9 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
   $status  = trim($_POST['status'] ?? '');
   $allowed = ['Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled'];
   if ($gid && in_array($status, $allowed)) {
-    $stmt = $pdo->prepare("UPDATE placeorder SET status=? WHERE order_group_id=?");
-    $stmt->execute([$status, $gid]);
-    error_log("Status updated: gid=$gid status=$status rows=" . $stmt->rowCount());
+    $pdo->prepare("UPDATE placeorder SET status=? WHERE order_group_id=?")->execute([$status, $gid]);
 
     // When status = Ready → send SMS to customer
     if ($status === 'Ready') {
