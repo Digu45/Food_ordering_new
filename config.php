@@ -19,7 +19,7 @@ else{
 
 // ── Restaurant Info ────────────────────────────────────────
 define('RESTAURANT_NAME',    'Digus Restaurant');
-define('RESTAURANT_ADDRESS', 'CBS Stand, Kolhapur');
+define('RESTAURANT_ADDRESS', 'Rajarampuri Lane no - 9, Kolhapur');
 define('RESTAURANT_PHONE',   '9309475959');
 define('UPI_ID',             'diguvapilkar45-1@oksbi');
 define('UPI_NAME',           'Digus Restaurant');
